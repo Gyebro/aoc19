@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(SOURCE_FILES
         sources/common.cpp
+        sources/day01.cpp
         sources/day05.cpp
         main.cpp)
 

@@ -105,7 +105,7 @@ bool run_intcode_program(vector<int>& o, queue<int>& inputs) {
 }
 
 void day05(bool part_two) {
-    cout << "AoC D5" << endl;
+    cout << "AoC D5: part " << (part_two ? "two" : "one") << endl;
     ifstream in("input05.txt");
     if (in.is_open()) {
         vector<int> program;
