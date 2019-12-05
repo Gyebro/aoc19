@@ -98,7 +98,7 @@ bool run_intcode_program(vector<int>& o, queue<int>& inputs) {
                 p += 4;
                 break;
             case 99:
-                cout << "Program terminated successfully!\n";
+                //cout << "Program terminated successfully!\n";
                 run = false;
                 break;
             default:

@@ -4,7 +4,6 @@ project(aoc19)
 set(CMAKE_CXX_STANDARD 14)
 
 set(SOURCE_FILES
-        main.cpp
         sources/common.cpp
         sources/day01.cpp
         sources/day02.cpp
@@ -15,10 +14,18 @@ set(SOURCE_FILES
 
 include_directories(sources)
 
-add_executable(aoc19 ${SOURCE_FILES})
+add_executable(aoc19 ${SOURCE_FILES} main.cpp)
 
-# Copy inputs to app dir
+add_executable(aoc19-benchmarks ${SOURCE_FILES} benchmarks.cpp)
+
+target_compile_definitions(aoc19-benchmarks PRIVATE RUN_BENCHMARKS)
+
+# Copy inputs to app directory
 add_custom_command(TARGET aoc19 POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${PROJECT_SOURCE_DIR}/inputs"
         $<TARGET_FILE_DIR:aoc19>)
+add_custom_command(TARGET aoc19-benchmarks POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/inputs"
+        $<TARGET_FILE_DIR:aoc19-benchmarks>)
