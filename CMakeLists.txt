@@ -4,10 +4,11 @@ project(aoc19)
 set(CMAKE_CXX_STANDARD 14)
 
 set(SOURCE_FILES
+        main.cpp
         sources/common.cpp
         sources/day01.cpp
-        sources/day05.cpp
-        main.cpp)
+        sources/day02.cpp
+        sources/day05.cpp sources/intcode_vm.cpp)
 
 include_directories(sources)
 

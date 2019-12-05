@@ -10,6 +10,15 @@
 #ifdef DAY01
 #include "day01.h"
 #endif
+#ifdef DAY02
+#include "day02.h"
+#endif
+#ifdef DAY03
+#include "day03.h"
+#endif
+#ifdef DAY04
+#include "day04.h"
+#endif
 #ifdef DAY05
 #include "day05.h"
 #endif
