@@ -140,7 +140,7 @@ int intersect(const Wire& w1, const Wire& w2, bool part_two = false) {
 }
 
 void day03(bool part_two) {
-    cout << "AoC D2: part " << (part_two ? "two" : "one") << endl;
+    cout << "AoC D3: part " << (part_two ? "two" : "one") << endl;
     ifstream in("input03.txt");
     if (in.is_open()) {
         string ws1, ws2;

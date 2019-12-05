@@ -17,6 +17,11 @@ int main() {
     day03(true);
 #endif
 
+#ifdef DAY04
+    day04();
+    day04(true);
+#endif
+
 #ifdef DAY05
     day05();
     day05(true);

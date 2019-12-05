@@ -7,7 +7,8 @@
 
 //#define DAY01
 //#define DAY02
-#define DAY03
+//#define DAY03
+#define DAY04
 //#define DAY05
 
 #endif //AOC19_DAY_CONFIG_H
