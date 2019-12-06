@@ -10,7 +10,8 @@ set(SOURCE_FILES
         sources/day03.cpp
         sources/day04.cpp
         sources/day05.cpp
-        sources/intcode_vm.cpp)
+        sources/intcode_vm.cpp
+        sources/day06.cpp)
 
 include_directories(sources)
 

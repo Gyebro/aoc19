@@ -22,5 +22,20 @@
 #ifdef DAY05
 #include "day05.h"
 #endif
+#ifdef DAY06
+#include "day06.h"
+#endif
+#ifdef DAY07
+#include "day07.h"
+#endif
+#ifdef DAY08
+#include "day08.h"
+#endif
+#ifdef DAY09
+#include "day09.h"
+#endif
+#ifdef DAY10
+#include "day10.h"
+#endif
 
 #endif //AOC19_DAYS_H

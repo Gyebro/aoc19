@@ -16,17 +16,19 @@ int main() {
             "1202 Program Alarm",
             "Crossed Wires",
             "Secure Container",
-            "Sunny with a Chance of Asteroids"
+            "Sunny with a Chance of Asteroids",
+            "Universal Orbit Map"
     };
 
     void (*day_functions[])(bool) = {
-            &day01, &day02, &day03, &day04, &day05
+            &day01, &day02, &day03, &day04, &day05,
+            &day06
     };
 
     Clock c;
     string day, day_w_title, inputfile, num;
 
-    for (size_t d = 1; d <= 5; d++) {
+    for (size_t d = 1; d <= day_titles.size(); d++) {
         if (d < 10) { num = "0"+to_string(d); }
         else {        num = to_string(d); }
         cout << endl << "Day "+num << endl;

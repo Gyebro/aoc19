@@ -26,5 +26,10 @@ int main() {
     day05();
     day05(true);
 #endif
+
+#ifdef DAY06
+    day06();
+    day06(true);
+#endif
     return 0;
 }
