@@ -17,12 +17,13 @@ int main() {
             "Crossed Wires",
             "Secure Container",
             "Sunny with a Chance of Asteroids",
-            "Universal Orbit Map"
+            "Universal Orbit Map",
+            "Amplification Circuit"
     };
 
     void (*day_functions[])(bool) = {
             &day01, &day02, &day03, &day04, &day05,
-            &day06
+            &day06, &day07
     };
 
     Clock c;
