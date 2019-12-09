@@ -9,13 +9,14 @@
 
     // Use these macros to enable/disable individual days
 
-    #define DAY01
-    #define DAY02
-    #define DAY03
-    #define DAY04
-    #define DAY05
-    #define DAY06
-    #define DAY07
+    //#define DAY01
+    //#define DAY02
+    //#define DAY03
+    //#define DAY04
+    //#define DAY05
+    //#define DAY06
+    //#define DAY07
+    #define DAY08
 
 #else
 

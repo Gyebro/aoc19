@@ -29,7 +29,7 @@
 #include "day07.h"
 #endif
 #ifdef DAY08
-//#include "day08.h"
+#include "day08.h"
 #endif
 #ifdef DAY09
 //#include "day09.h"
