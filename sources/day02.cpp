@@ -8,37 +8,40 @@ void day02(bool part_two) {
     cout << "AoC D2: part " << (part_two ? "two" : "one") << endl;
     ifstream in("input02.txt");
     if (in.is_open()) {
-        vector<int> program;
+        vector<int64_t> program;
         string line;
         while (getline(in, line, ',')) {
-            program.push_back(stoi(line));
+            program.push_back(stoll(line));
         }
-        cout << program.size() << " intcodes found\n";
         if (!part_two) {
             program[1] = 12;
             program[2] = 2;
-            run_intcode_program(program);
-            cout << "reg[0] = " << program[0] << endl;
+            IntcodeProgram p(program);
+            p.run();
+            cout << "reg[0] = " << p.readReg(0) << endl;
         } else {
             int target = 19690720;
-            vector<int> program_copy(program);
+            vector<int64_t> program_copy(program);
             program_copy[1] = 12;
             program_copy[2] = 2;
             // Get initial result
-            run_intcode_program(program_copy);
-            int initial = program_copy[0];
+            IntcodeProgram p(program_copy);
+            p.run();
+            int initial = p.readReg(0);
             // See what difference +1 in noun makes
             program_copy = program;
             program_copy[1] = 13;
             program_copy[2] = 2;
-            run_intcode_program(program_copy);
-            int noun_diff = program_copy[0]-initial;
+            IntcodeProgram p2(program_copy);
+            p2.run();
+            int noun_diff = p2.readReg(0)-initial;
             // See what difference +1 in verb makes
             program_copy = program;
             program_copy[1] = 12;
             program_copy[2] = 3;
-            run_intcode_program(program_copy);
-            int verb_diff = program_copy[0]-initial;
+            IntcodeProgram p3(program_copy);
+            p3.run();
+            int verb_diff = p3.readReg(0)-initial;
             cout << "Diff caused by noun++ is " << noun_diff << endl;
             cout << "Diff caused by verb++ is " << verb_diff << endl;
             int noun_inc = (target-initial)/noun_diff;

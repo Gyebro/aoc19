@@ -10,19 +10,17 @@ void day07(bool part_two) {
     cout << "AoC D7: part " << (part_two ? "two" : "one") << endl;
     ifstream in("input07.txt");
     if (in.is_open()) {
-        vector<long int> program;
+        vector<int64_t> program;
         string line;
         while (getline(in, line, ',')) {
             program.push_back(stoi(line));
         }
-        cout << program.size() << " intcodes found\n";
         if (!part_two) {
             // Part one
-            vector<long int> phase = {0, 1, 2, 3, 4};
+            vector<int64_t> phase = {0, 1, 2, 3, 4};
             int final_out;
             int max_final = 0;
             do {
-                //cout << phase[0] << phase[1] << phase[2] << phase[3] << phase[4] << '\n';
                 IntcodeProgram amp0(program);
                 IntcodeProgram amp1(program);
                 IntcodeProgram amp2(program);
@@ -44,7 +42,7 @@ void day07(bool part_two) {
             cout << "Maximum possible thruster signal is: " << max_final << endl;
         } else {
             // Part two
-            vector<long int> phase = {5,6,7,8,9};
+            vector<int64_t> phase = {5,6,7,8,9};
             int final_out;
             int max_final = 0;
             do {

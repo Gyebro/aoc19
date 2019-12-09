@@ -6,28 +6,26 @@
 
 #include "common.h"
 
-bool run_intcode_program(vector<int>& o, queue<int>& inputs);
-
-bool run_intcode_program(vector<int>& o, queue<int>& inputs, queue<int>& outputs);
-
-bool run_intcode_program(vector<int>& o);
-
 class IntcodeProgram {
 private:
-    vector<long int> program;
-    queue<long int> inputs;
-    queue<long int> outputs;
+    vector<int64_t> program;
+    queue<int64_t> inputs;
+    queue<int64_t> outputs;
     size_t p;
     bool halted;
 public:
-    IntcodeProgram(vector<long int>& intcodes) : program(intcodes) {
-        p = 0;
-        halted = false;
+    IntcodeProgram(ifstream& input) : p(0), halted(false) {
+        string line;
+        while (getline(input, line, ',')) {
+            program.push_back(stoll(line));
+        }
+    }
+    IntcodeProgram(vector<int64_t>& intcodes) : program(intcodes), p(0), halted(false) {
     };
-    void sendInput(const long int& i) {
+    void sendInput(const int64_t& i) {
         inputs.push(i);
     }
-    void sendInput(vector<long int> in) {
+    void sendInput(vector<int64_t> in) {
         for (int i : in) {
             inputs.push(i);
         }
@@ -35,20 +33,27 @@ public:
     bool hasOutput() {
         return !outputs.empty();
     }
-    long int getOutput() {
+    int64_t getOutput() {
         if (!hasOutput()) cout << "Error: trying to get output from empty queue!\n";
-        long int out = outputs.front();
+        int64_t out = outputs.front();
         outputs.pop();
         return out;
     }
-    long int readOutput() {
+    int64_t readOutput() {
         if (!hasOutput()) cout << "Error: trying to get output from empty queue!\n";
         return outputs.front();
+    }
+    int64_t readLastOutput() {
+        if (!hasOutput()) cout << "Error: trying to get output from empty queue!\n";
+        return outputs.back();
     }
     bool hasTerminated() {
         return halted;
     }
     bool run();
+    int64_t readReg(uint64_t pos) {
+        return program[pos];
+    }
 };
 
 #endif //AOC19_INTCODE_VM_H

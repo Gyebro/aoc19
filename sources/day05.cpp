@@ -8,19 +8,14 @@ void day05(bool part_two) {
     cout << "AoC D5: part " << (part_two ? "two" : "one") << endl;
     ifstream in("input05.txt");
     if (in.is_open()) {
-        vector<int> program;
-        string line;
-        while (getline(in, line, ',')) {
-            program.push_back(stoi(line));
-        }
-        cout << program.size() << " intcodes found\n";
-        queue<int> inputs;
+        IntcodeProgram program(in);
         if (!part_two) {
-            inputs.push(1);
+            program.sendInput(1);
         } else {
-            inputs.push(5);
+            program.sendInput(5);
         }
-        bool res = run_intcode_program(program, inputs);
+        program.run();
+        cout << program.readLastOutput() << endl;
     }
 }
 
