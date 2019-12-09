@@ -12,15 +12,18 @@ private:
     queue<int64_t> inputs;
     queue<int64_t> outputs;
     size_t p;
+    size_t rel_base;
     bool halted;
+    bool verbose;
 public:
-    IntcodeProgram(ifstream& input) : p(0), halted(false) {
+    IntcodeProgram(ifstream& input) : p(0), rel_base(0), halted(false), verbose(false) {
         string line;
         while (getline(input, line, ',')) {
             program.push_back(stoll(line));
         }
     }
-    IntcodeProgram(vector<int64_t>& intcodes) : program(intcodes), p(0), halted(false) {
+    IntcodeProgram(vector<int64_t>& intcodes) : program(intcodes), p(0), rel_base(0), halted(false),
+        verbose(false) {
     };
     void sendInput(const int64_t& i) {
         inputs.push(i);
@@ -53,6 +56,14 @@ public:
     bool run();
     int64_t readReg(uint64_t pos) {
         return program[pos];
+    }
+    void reserveMemory(uint64_t memsize) {
+        if (program.size() < memsize) {
+            program.resize(memsize);
+        }
+    }
+    void setVerbose(bool verb) {
+        verbose = verb;
     }
 };
 

@@ -42,5 +42,10 @@ int main() {
     day08(true);
 #endif
 
+#ifdef DAY09
+    day09();
+    day09(true);
+#endif
+
     return 0;
 }

@@ -5,8 +5,7 @@
 
 bool IntcodeProgram::run() {
     int64_t op;
-    int64_t mode_p0, mode_p1, mode_p2;
-    int64_t p0, p1, p2;
+    int64_t m0, m1, m2;
     bool run = true;
     if (halted) {
         cout << "Error: trying to run halted VM\n";
@@ -14,88 +13,83 @@ bool IntcodeProgram::run() {
     while (!halted && run) {
         // Decompose opcode
         op = program[p];
-        mode_p2 = op/10000; op -= mode_p2*10000;
-        mode_p1 = op/1000; op -= mode_p1*1000;
-        mode_p0 = op/100; op -= mode_p0*100;
+        m2 = op / 10000; op -= m2 * 10000;
+        m1 = op / 1000; op -= m1 * 1000;
+        m0 = op / 100; op -= m0 * 100;
+        // TODO: Check if we have enough memory
+        // Modes: 2: relative, 0: position, 1: immediate
+        int64_t& p0 = (m0 == 2) ? program[rel_base+program[p + 1]] : ((m0 == 0) ? program[program[p + 1]] : program[p + 1]);
+        int64_t& p1 = (m1 == 2) ? program[rel_base+program[p + 2]] : ((m1 == 0) ? program[program[p + 2]] : program[p + 2]);
+        int64_t& p2 = (m2 == 2) ? program[rel_base+program[p + 3]] : ((m2 == 0) ? program[program[p + 3]] : program[p + 3]);
         // Error check on modes
-        if (mode_p0 > 1 || mode_p1 > 1 || mode_p2 > 1) {
+        if (m0 > 2 || m1 > 2 || m2 > 2) {
             cout << "Error, invalid parameter mode\n";
             return false;
         }
         switch (op) {
-            case 1: // Add arg1 and arg2 into arg3
-                p0 = (mode_p0 == 0) ? program[program[p + 1]] : program[p + 1];
-                p1 = (mode_p1 == 0) ? program[program[p + 2]] : program[p + 2];
-                if (mode_p2 != 0) cout << "Error: 'write to' parameter in 'immediate' mode\n";
-                program[program[p + 3]] = p0 + p1;
+            case 1: // Add p0 and p1 into p2
+                if (m2 == 1) cout << "Error: 'write to' parameter in 'immediate' mode\n";
+                p2 = p0 + p1;
                 p+=4;
                 break;
-            case 2: // Multiply arg1 and arg2 into arg3
-                p0 = (mode_p0 == 0) ? program[program[p + 1]] : program[p + 1];
-                p1 = (mode_p1 == 0) ? program[program[p + 2]] : program[p + 2];
-                if (mode_p2 != 0) cout << "Error: 'write to' parameter in 'immediate' mode\n";
-                program[program[p + 3]] = p0 * p1;
+            case 2: // Multiply p0 and p1 into p2
+                if (m2 == 1) cout << "Error: 'write to' parameter in 'immediate' mode\n";
+                p2 = p0 * p1;
                 p+=4;
                 break;
-            case 3: // Write input into arg1
-                if (mode_p0 != 0) cout << "Error: 'write to' parameter in 'immediate' mode\n";
+            case 3: // Write input into p0
+                if (m0 == 1) cout << "Error: 'write to' parameter in 'immediate' mode\n";
                 if (inputs.empty()) {
-                    //cout << "Info: no more input!\n";
                     run = false;
                 } else {
-                    program[program[p + 1]] = inputs.front();
+                    p0 = inputs.front();
                     inputs.pop();
                     p+=2;
                 }
                 break;
-            case 4: // Output arg1
-                p0 = (mode_p0 == 0) ? program[program[p + 1]] : program[p + 1];
-                //cout << "Output: " << p0 << endl;
+            case 4: // Output p0
+                if (verbose) cout << "Output: " << p0 << endl;
                 outputs.push(p0);
                 p+=2;
                 break;
-            case 5: // Jump if true: if arg1!=0, p=arg2
-                p0 = (mode_p0 == 0) ? program[program[p + 1]] : program[p + 1];
-                p1 = (mode_p1 == 0) ? program[program[p + 2]] : program[p + 2];
+            case 5: // Jump if true: if p0!=0, p=p1
                 if (p0 != 0) {
                     p = p1; // Jump
                 } else {
                     p += 3;
                 }
                 break;
-            case 6: // Jump if false: if arg1!=0, p=arg2
-                p0 = (mode_p0 == 0) ? program[program[p + 1]] : program[p + 1];
-                p1 = (mode_p1 == 0) ? program[program[p + 2]] : program[p + 2];
+            case 6: // Jump if false: if p0==0, p=p1
                 if (p0 == 0) {
                     p = p1; // Jump
                 } else {
                     p += 3;
                 }
                 break;
-            case 7: // Less than:  arg3 = arg1<arg2
-                p0 = (mode_p0 == 0) ? program[program[p + 1]] : program[p + 1];
-                p1 = (mode_p1 == 0) ? program[program[p + 2]] : program[p + 2];
-                if (mode_p2 != 0) cout << "Error: 'write to' parameter in 'immediate' mode\n";
+            case 7: // Less than:  p2 = p0<p1
+                if (m2 == 1) cout << "Error: 'write to' parameter in 'immediate' mode\n";
                 if (p0 < p1) {
-                    program[program[p + 3]] = 1;
+                    p2 = 1;
                 } else {
-                    program[program[p + 3]] = 0;
+                    p2 = 0;
                 }
                 p += 4;
                 break;
-            case 8: // Equals:  arg3 = arg1==arg2
-                p0 = (mode_p0 == 0) ? program[program[p + 1]] : program[p + 1];
-                p1 = (mode_p1 == 0) ? program[program[p + 2]] : program[p + 2];
-                if (mode_p2 != 0) cout << "Error: 'write to' parameter in 'immediate' mode\n";
+            case 8: // Equals:  p2 = p0==p1
+                if (m2 == 1) cout << "Error: 'write to' parameter in 'immediate' mode\n";
                 if (p0 == p1) {
-                    program[program[p + 3]] = 1;
+                    p2 = 1;
                 } else {
-                    program[program[p + 3]] = 0;
+                    p2 = 0;
                 }
                 p += 4;
+                break;
+            case 9: // Adjust relative base by p0
+                rel_base += p0;
+                p += 2;
                 break;
             case 99:
-                //cout << "Program terminated successfully!\n";
+                if (verbose) cout << "Intcode program terminated successfully\n";
                 halted = true;
                 run = false;
                 break;

@@ -19,12 +19,13 @@ int main() {
             "Sunny with a Chance of Asteroids",
             "Universal Orbit Map",
             "Amplification Circuit",
-            "Space Image Format"
+            "Space Image Format",
+            "Sensor Boost"
     };
 
     void (*day_functions[])(bool) = {
             &day01, &day02, &day03, &day04, &day05,
-            &day06, &day07, &day08
+            &day06, &day07, &day08, &day09
     };
 
     Clock c;
