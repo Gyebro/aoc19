@@ -20,12 +20,13 @@ int main() {
             "Universal Orbit Map",
             "Amplification Circuit",
             "Space Image Format",
-            "Sensor Boost"
+            "Sensor Boost",
+            "Monitoring Station"
     };
 
     void (*day_functions[])(bool) = {
             &day01, &day02, &day03, &day04, &day05,
-            &day06, &day07, &day08, &day09
+            &day06, &day07, &day08, &day09, &day10
     };
 
     Clock c;
