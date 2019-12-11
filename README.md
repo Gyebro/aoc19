@@ -5,17 +5,17 @@ Processor: Intel Core i7-7700HQ, single thread unless indicated
 
 Day | Part One [ms] | Part Two [ms]
 --- | ---: | ---:
-Day 01: The Tyranny of the Rocket Equation | 1.656 | 1.182
-Day 02: 1202 Program Alarm | 1.496 | 4.635
-Day 03: Crossed Wires | 1.448 | 1.775
-Day 04: Secure Container | 6.449 | 8.171
-Day 05: Sunny with a Chance of Asteroids | 1.367 | 1.042
-Day 06: Universal Orbit Map | 7.656 | 10.775
-Day 07: Amplification Circuit | 5.233 | 4.400
-Day 08: Space Image Format | 3.009 | 12.883
-Day 09: Sensor Boost | 24.241 | 27.636
-Day 10: Monitoring Station | 155.231 | 205.651
-Day 11: Space Police | 25.907 | 71.913
+Day 01: The Tyranny of the Rocket Equation | 1.751 | 3.068
+Day 02: 1202 Program Alarm | 1.611 | 9.601
+Day 03: Crossed Wires | 1.518 | 1.475
+Day 04: Secure Container | 6.665 | 8.071
+Day 05: Sunny with a Chance of Asteroids | 3.884 | 1.503
+Day 06: Universal Orbit Map | 7.827 | 12.226
+Day 07: Amplification Circuit | 5.186 | 4.591
+Day 08: Space Image Format | 3.571 | 19.070
+Day 09: Sensor Boost | 20.675 | 23.590
+Day 10: Monitoring Station | 168.226 | 139.334
+Day 11: Space Police | 27.623 | 95.716
 
-Total time: 0.584 seconds
+Total time: 0.567 seconds
 

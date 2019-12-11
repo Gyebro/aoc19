@@ -21,16 +21,16 @@ size_t scan(const vector<vec2i>& m, const vec2i& a) {
     double ai, ab;
     for (const vec2i& o : m) {
         xi=o.first; yi=o.second;
-        if(!(x==xi && y==yi)) { // If o != a
+        if(a != o) { // If o != a
             // check if o is visible from a
             // loop on other asteroids find blockers
             vis = true;
             for (const vec2i& b : m) {
                 xb=b.first; yb=b.second;
                 if (!vis) break;
-                if(!(xb==xi && yb==yi) && !(xb==x &&  yb==y)) {
+                if(b!=o && b!=a) {
                     if (y==yi && y==yb) { // Check for horizontal block
-                        if (abs(xb-x)<abs(xi-x) && sgn(xb-x)==sgn(xi-x)) {
+                        if (sgn(xb-x)==sgn(xi-x) && abs(xb-x)<abs(xi-x)) {
                             vis = false;
                         }
                     } else if (y==yi || y==yb) {
@@ -97,15 +97,17 @@ vec2i scan_and_destroy(vector<vec2i>& map, vec2i& base, const size_t to_destroy)
         });
     }
     size_t destroyed = 1;
-    for (asteroid_line& al : radial_map) {
-        if (!al.asteroids.empty()) {
-            vec2i dest = al.asteroids.front();
-            //cout << destroyed << " Laser destroys : (" << dest.first+base.first << "," << -dest.second+base.second << ")\n";
-            al.asteroids.pop_front();
-            if (destroyed == to_destroy) {
-                return {(dest.first+base.first),(-dest.second+base.second)};
+    while (destroyed < to_destroy) {
+        for (asteroid_line& al : radial_map) {
+            if (!al.asteroids.empty()) {
+                vec2i dest = al.asteroids.front();
+                //cout << destroyed << " Laser destroys : (" << dest.first+base.first << "," << -dest.second+base.second << ")\n";
+                al.asteroids.pop_front();
+                if (destroyed == to_destroy) {
+                    return {(dest.first+base.first),(-dest.second+base.second)};
+                }
+                destroyed++;
             }
-            destroyed++;
         }
     }
     return base;
