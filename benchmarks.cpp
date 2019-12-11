@@ -21,12 +21,14 @@ int main() {
             "Amplification Circuit",
             "Space Image Format",
             "Sensor Boost",
-            "Monitoring Station"
+            "Monitoring Station",
+            "Space Police"
     };
 
     void (*day_functions[])(bool) = {
             &day01, &day02, &day03, &day04, &day05,
-            &day06, &day07, &day08, &day09, &day10
+            &day06, &day07, &day08, &day09, &day10,
+            &day11
     };
 
     Clock c;
@@ -71,7 +73,7 @@ int main() {
     out << setprecision(3) << fixed;
     double time_sum = 0;
     for (size_t i=0; i<tasks.size(); i++) {
-        if (i != 10-1 && i != 25-1) {
+        if (i != 25-1) {
             out << tasks[i] << " | " << time_ms[2*i] << " | " << time_ms[2*i+1] << '\n';
             time_sum += time_ms[2*i]+time_ms[2*i+1];
         } else {
