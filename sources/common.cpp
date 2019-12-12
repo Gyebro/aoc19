@@ -3,6 +3,22 @@
 //
 #include "common.h"
 
+size_t lcm(size_t a, size_t b) {
+    size_t hcf = a; // highest common factor
+    size_t temp = b;
+    while (hcf != temp) {
+        if (hcf > temp)
+            hcf -= temp;
+        else
+            temp -= hcf;
+    }
+    return (a / hcf) * b;
+}
+
+size_t lcm(size_t& a, size_t& b, size_t& c) {
+    return lcm(lcm(a,b),lcm(a,c));
+}
+
 #ifndef USE_WINDOWS_CLOCK
 
 Clock::Clock() {

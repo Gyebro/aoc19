@@ -23,6 +23,9 @@ using namespace std;
 
 #define PI 3.1415926535897932384626433832795
 
+size_t lcm(size_t a, size_t b);
+
+size_t lcm(size_t& a, size_t& b, size_t& c);
 
 template<class T>
 bool contains(const vector<T>& c, const T& t) {
