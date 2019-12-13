@@ -20,7 +20,7 @@ void day11(bool part_two) {
     ifstream in("input11.txt");
     if (in.is_open()) {
         IntcodeProgram program(in);
-        program.reserveMemory(4000000);
+        program.reserveMemory(1500);
         vector<output_packet> tiles; // The robot's path
         vec2i pos = {0,0};
         size_t idx;

@@ -10,7 +10,7 @@ void day09(bool part_two) {
     ifstream in("input09.txt");
     if (in.is_open()) {
         IntcodeProgram program(in);
-        program.reserveMemory(4000000);
+        program.reserveMemory(1200);
         program.setVerbose(false);
         if (!part_two) {
             program.sendInput(1);

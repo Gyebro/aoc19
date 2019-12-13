@@ -8,13 +8,13 @@
 
 class IntcodeProgram {
 private:
-    vector<int64_t> program;
-    queue<int64_t> inputs;
-    deque<int64_t> outputs;
     size_t p;
     size_t rel_base;
     bool halted;
     bool verbose;
+    deque<int64_t> inputs;
+    deque<int64_t> outputs;
+    vector<int64_t> program;
     int64_t& getReference(size_t pos, size_t mode);
 public:
     IntcodeProgram(ifstream& input) : p(0), rel_base(0), halted(false), verbose(false) {
@@ -27,18 +27,21 @@ public:
         verbose(false) {
     };
     void sendInput(const int64_t& i) {
-        inputs.push(i);
+        inputs.push_back(i);
     }
     void sendInput(vector<int64_t> in) {
         for (int i : in) {
-            inputs.push(i);
+            inputs.push_back(i);
         }
     }
     bool hasOutput() {
         return !outputs.empty();
     }
     int64_t getOutput() {
-        if (!hasOutput()) cout << "Error: trying to get output from empty queue!\n";
+        if (!hasOutput()) {
+            cout << "Error: trying to get output from empty queue!\n";
+            return 0;
+        }
         int64_t out = outputs.front();
         outputs.pop_front();
         return out;

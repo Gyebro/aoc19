@@ -4,10 +4,13 @@
 #include "day13.h"
 #include "intcode_vm.h"
 
-struct output_packet {
+class output_packet {
+public:
     int64_t x;
     int64_t y;
     int64_t c;
+    output_packet() : x(0), y(0), c(0) {}
+    output_packet(int64_t X, int64_t Y, int64_t C) : x(X), y(Y), c(C) {}
 };
 
 const string cTileChars = " +#=o";
@@ -20,15 +23,12 @@ const size_t cBlock = 2;
 const size_t cPaddle = 3;
 const size_t cBall = 4;
 
-
-
-
 void day13(bool part_two) {
     cout << "AoC D13: part " << (part_two ? "two" : "one") << endl;
     ifstream in("input13.txt");
     if (in.is_open()) {
         IntcodeProgram program(in);
-        program.reserveMemory(4000000);
+        program.reserveMemory(5000);
         if (!part_two) { // Part One
             while (!program.hasTerminated()) {
                 program.run();
@@ -65,12 +65,12 @@ void day13(bool part_two) {
             bool manual = false;
             bool print_display = false || manual; // Manual mode needs display
             program.writeReg(0,2);
-            vector<output_packet> outputs(100);
+            vector<output_packet> outputs;
             // Initialize displays
             program.sendInput(cJoyNeutral);
             program.setVerbose(false);
             program.run();
-            output_packet out;
+            output_packet out(0,0,0);
             while (program.hasOutput()) {
                 out.x = program.getOutput();
                 out.y = program.getOutput();
@@ -107,10 +107,11 @@ void day13(bool part_two) {
             if (print_display) {
                 cout << frame_line << endl;
                 cout << "+ SCORE: " << score << endl;
-                for (string l : display) {
+                for (const string &l : display) {
                     cout << l << endl;
                 }
             }
+            // Play
             bool playing = true;
             while (playing) {
                 if (manual) {
@@ -142,7 +143,7 @@ void day13(bool part_two) {
                 }
                 program.run();
                 if (program.hasTerminated()) playing = false;
-                outputs.clear();
+                outputs.resize(0);
                 while (program.hasOutput()) {
                     out.x = program.getOutput();
                     out.y = program.getOutput();
@@ -160,7 +161,7 @@ void day13(bool part_two) {
                 if (print_display) {
                     cout << frame_line << endl;
                     cout << "+ SCORE: " << score << endl;
-                    for (string l : display) {
+                    for (const string &l : display) {
                         cout << l << endl;
                     }
                 }
