@@ -4,16 +4,16 @@
 #include "day13.h"
 #include "intcode_vm.h"
 
-class output_packet {
+class display_packet {
 public:
     int64_t x;
     int64_t y;
     int64_t c;
-    output_packet() : x(0), y(0), c(0) {}
-    output_packet(int64_t X, int64_t Y, int64_t C) : x(X), y(Y), c(C) {}
+    display_packet() : x(0), y(0), c(0) {}
+    display_packet(int64_t X, int64_t Y, int64_t C) : x(X), y(Y), c(C) {}
 };
 
-const string cTileChars = " +#=o";
+const string cTileChars = " +#=o ";
 const int64_t cJoyNeutral = 0;
 const int64_t cJoyLeft = -1;
 const int64_t cJoyRight = +1;
@@ -65,12 +65,12 @@ void day13(bool part_two) {
             bool manual = false;
             bool print_display = false || manual; // Manual mode needs display
             program.writeReg(0,2);
-            vector<output_packet> outputs;
+            vector<display_packet> outputs;
             // Initialize displays
             program.sendInput(cJoyNeutral);
             program.setVerbose(false);
             program.run();
-            output_packet out(0,0,0);
+            display_packet out(0,0,0);
             while (program.hasOutput()) {
                 out.x = program.getOutput();
                 out.y = program.getOutput();
@@ -80,7 +80,7 @@ void day13(bool part_two) {
             // Find display bounds
             int64_t score = 0;
             int64_t w = 0, h = 0;
-            for (output_packet& o : outputs) {
+            for (display_packet& o : outputs) {
                 if (o.x < 0) {
                     score = o.c;
                 } else {
@@ -96,7 +96,7 @@ void day13(bool part_two) {
             vector<string> display(h+1,line);
             int paddle_x = 0;
             int ball_x = 0;
-            for (output_packet& o : outputs) {
+            for (display_packet& o : outputs) {
                 if (o.x >= 0) {
                     display[o.y][o.x]=cTileChars[o.c];
                     if (o.c == cBall) ball_x = o.x;
@@ -150,7 +150,7 @@ void day13(bool part_two) {
                     out.c = program.getOutput();
                     outputs.push_back(out);
                 }
-                for (output_packet& o : outputs) {
+                for (display_packet& o : outputs) {
                     if (o.x >= 0) {
                         display[o.y][o.x]=cTileChars[o.c];
                         if (o.c == cBall) ball_x = o.x;
