@@ -10,11 +10,12 @@ class IntcodeProgram {
 private:
     vector<int64_t> program;
     queue<int64_t> inputs;
-    queue<int64_t> outputs;
+    deque<int64_t> outputs;
     size_t p;
     size_t rel_base;
     bool halted;
     bool verbose;
+    int64_t& getReference(size_t pos, size_t mode);
 public:
     IntcodeProgram(ifstream& input) : p(0), rel_base(0), halted(false), verbose(false) {
         string line;
@@ -39,7 +40,7 @@ public:
     int64_t getOutput() {
         if (!hasOutput()) cout << "Error: trying to get output from empty queue!\n";
         int64_t out = outputs.front();
-        outputs.pop();
+        outputs.pop_front();
         return out;
     }
     int64_t readOutput() {
@@ -54,12 +55,16 @@ public:
         return halted;
     }
     bool run();
-    int64_t readReg(uint64_t pos) {
+    int64_t readReg(uint64_t pos) const {
         return program[pos];
     }
+    void writeReg(uint64_t pos, int64_t val) {
+        program[pos]=val;
+    }
     void reserveMemory(uint64_t memsize) {
-        if (program.size() < memsize) {
-            program.resize(memsize);
+        if (program.size() < memsize+1) {
+            if (verbose) cout << "Increasing memory to " << memsize << endl;
+            program.resize(memsize+1,0);
         }
     }
     void setVerbose(bool verb) {

@@ -13,6 +13,8 @@
 
 #include <vector>
 #include <queue>
+#include <deque>
+#include <list>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -26,6 +28,8 @@ using namespace std;
 size_t lcm(size_t a, size_t b);
 
 size_t lcm(size_t& a, size_t& b, size_t& c);
+
+const string clear_terminal("\x1B[2J\x1B[H");
 
 template<class T>
 bool contains(const vector<T>& c, const T& t) {

@@ -22,13 +22,15 @@ int main() {
             "Space Image Format",
             "Sensor Boost",
             "Monitoring Station",
-            "Space Police"
+            "Space Police",
+            "The N-Body Problem",
+            "Care Package"
     };
 
     void (*day_functions[])(bool) = {
             &day01, &day02, &day03, &day04, &day05,
             &day06, &day07, &day08, &day09, &day10,
-            &day11
+            &day11, &day12, &day13
     };
 
     Clock c;

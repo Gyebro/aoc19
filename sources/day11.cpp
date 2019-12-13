@@ -5,7 +5,7 @@
 #include "intcode_vm.h"
 
 typedef pair<int, int> vec2i;
-struct tile {
+struct output_packet {
     vec2i coord;
     bool black;
 };
@@ -21,7 +21,7 @@ void day11(bool part_two) {
     if (in.is_open()) {
         IntcodeProgram program(in);
         program.reserveMemory(4000000);
-        vector<tile> tiles; // The robot's path
+        vector<output_packet> tiles; // The robot's path
         vec2i pos = {0,0};
         size_t idx;
         bool been_there = false;
@@ -33,7 +33,7 @@ void day11(bool part_two) {
         }
         while (!program.hasTerminated() && !done) {
             // Get color of current pos
-            idx = find_idx_if(tiles, [pos](const tile &t) { return t.coord == pos; });
+            idx = find_idx_if(tiles, [pos](const output_packet &t) { return t.coord == pos; });
             if (idx == tiles.size()) {
                 // Create a new tile (black initially), idx will be a valid index now
                 tiles.push_back({pos,true});
@@ -101,7 +101,7 @@ void day11(bool part_two) {
             int xmax = 0;
             int ymin = 0;
             int ymax = 0;
-            for (const tile& t : tiles) {
+            for (const output_packet& t : tiles) {
                 xmin = min(xmin, t.coord.first);
                 xmax = max(xmax, t.coord.first);
                 ymin = min(ymin, t.coord.second);
@@ -111,7 +111,7 @@ void day11(bool part_two) {
                                   "(" << xmax << "," << ymax << ")\n";
             vector<char> line(xmax-xmin+1,' ');
             vector<vector<char>> licence_plate(ymax-ymin+1, line);
-            for (const tile& t : tiles) {
+            for (const output_packet& t : tiles) {
                 size_t x = t.coord.first  - xmin;
                 size_t y = t.coord.second - ymin;
                 licence_plate[y][x] = t.black ? ' ' : '#';
