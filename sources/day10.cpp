@@ -13,6 +13,36 @@ int sgn(int a) {
 
 const double eps = 0.000001;
 
+struct asteroid_line {
+    double angle;
+    deque<vec2i> asteroids;
+};
+
+size_t scan2(const vector<vec2i>& map, const vec2i& central) {
+    // Build radial map with respect to 'central' asteroid
+    vector<double> radial_map;
+    size_t idx;
+    for (const vec2i& a : map) {
+        if (a != central) {
+            int x = a.first - central.first;
+            int y = a.second - central.second;
+            double ang = atan2(y, x);  // counterclockwise from {1,0} direction
+            // Check if an asteroid line exists for this angle
+            idx = find_idx_if(radial_map, [ang](const double &angle) { return fabs(angle - ang) < eps; });
+            if (idx < radial_map.size()) {
+                // Angle already exists in map
+            } else {
+                radial_map.push_back(ang);
+            }
+        } else {
+            // skip central asteroid
+        }
+    }
+    // The size of the radial map equals the number of visible asteroids
+    return radial_map.size();
+}
+
+// This was the initial implementation to determine how many asteroids are visible from a
 size_t scan(const vector<vec2i>& m, const vec2i& a) {
     int x=a.first; int y=a.second;
     size_t v = 0;
@@ -55,11 +85,6 @@ size_t scan(const vector<vec2i>& m, const vec2i& a) {
     } // for
     return v;
 }
-
-struct asteroid_line {
-    double angle;
-    deque<vec2i> asteroids;
-};
 
 vec2i scan_and_destroy(vector<vec2i>& map, vec2i& base, const size_t to_destroy) {
     vector<asteroid_line> radial_map;
@@ -133,7 +158,7 @@ void day10(bool part_two) {
         size_t visible;
         vec2i base;
         for (const vec2i& asteroid : map) {
-            visible = scan(map,asteroid);
+            visible = scan2(map,asteroid);
             if (visible > max_visible) {
                 max_visible = visible;
                 base = asteroid;
