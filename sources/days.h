@@ -46,5 +46,14 @@
 #ifdef DAY13
 #include "day13.h"
 #endif
+#ifdef DAY14
+//#include "day14.h"
+#endif
+#ifdef DAY15
+//#include "day15.h"
+#endif
+#ifdef DAY16
+#include "day16.h"
+#endif
 
 #endif //AOC19_DAYS_H
