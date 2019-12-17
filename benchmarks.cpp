@@ -24,13 +24,18 @@ int main() {
             "Monitoring Station",
             "Space Police",
             "The N-Body Problem",
-            "Care Package"
+            "Care Package",
+            "Space Stoichiometry",
+            "Oxygen System",
+            "Flawed Frequency Transmission",
+            "Set and Forget"
     };
 
     void (*day_functions[])(bool) = {
             &day01, &day02, &day03, &day04, &day05,
             &day06, &day07, &day08, &day09, &day10,
-            &day11, &day12, &day13
+            &day11, &day12, &day13, &day14, &day15,
+            &day16, &day17
     };
 
     Clock c;
@@ -75,6 +80,9 @@ int main() {
     out << setprecision(3) << fixed;
     double time_sum = 0;
     for (size_t i=0; i<tasks.size(); i++) {
+        if (i == 13 || i == 14) {
+            out << tasks[i] << " | " << "-" << " | - \n";
+        } else
         if (i != 25-1) {
             out << tasks[i] << " | " << time_ms[2*i] << " | " << time_ms[2*i+1] << '\n';
             time_sum += time_ms[2*i]+time_ms[2*i+1];

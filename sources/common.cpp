@@ -2,6 +2,7 @@
 // Created by Gyebro on 2019-12-05.
 //
 #include "common.h"
+#include <algorithm>
 
 size_t lcm(size_t a, size_t b) {
     size_t hcf = a; // highest common factor
@@ -17,6 +18,20 @@ size_t lcm(size_t a, size_t b) {
 
 size_t lcm(size_t& a, size_t& b, size_t& c) {
     return lcm(lcm(a,b),lcm(a,c));
+}
+
+vector<string> split(const string &s, char delim) {
+    vector<string> elems;
+    split(s, delim, back_inserter(elems));
+    return elems;
+}
+
+string trim_spaces(string value) {
+    // Remove leading spaces
+    value.erase(value.begin(), std::find_if(value.begin(), value.end(), std::bind1st(std::not_equal_to<char>(), ' ')));
+    // Remove trailing ones
+    value.erase(std::find_if(value.rbegin(), value.rend(), std::bind1st(std::not_equal_to<char>(), ' ')).base(), value.end());
+    return value;
 }
 
 #ifndef USE_WINDOWS_CLOCK

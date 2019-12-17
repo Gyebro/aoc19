@@ -29,6 +29,11 @@ public:
     void sendInput(const int64_t& i) {
         inputs.push_back(i);
     }
+    void sendInputString(const string& s) {
+        for (char c : s) {
+            inputs.push_back(static_cast<int64_t>(c));
+        }
+    }
     void sendInput(vector<int64_t> in) {
         for (int i : in) {
             inputs.push_back(i);

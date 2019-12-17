@@ -44,7 +44,6 @@ size_t find_idx(const T& container, const U& elem) {
     return find(container.begin(), container.end(), elem)-container.begin();
 }
 
-
 template<class T, class Functor>
 size_t find_idx_if(const T& container, Functor lambda) {
     for (size_t idx=0; idx<container.size(); idx++) {
@@ -52,6 +51,18 @@ size_t find_idx_if(const T& container, Functor lambda) {
     }
     return container.size();
 }
+
+template<class T>
+void split(const std::string &s, char delim, T result) {
+    stringstream ss(s); string item;
+    while (getline(ss, item, delim)) {
+        *(result++) = item;
+    }
+}
+
+vector<string> split(const string &s, char delim);
+
+string trim_spaces(const string s);
 
 class Clock {
 private:
