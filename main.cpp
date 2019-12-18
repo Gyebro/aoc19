@@ -69,7 +69,7 @@ int main() {
 
 #ifdef DAY14
     day14();
-    //day14(true);
+    day14(true);
 #endif
 
 #ifdef DAY15
