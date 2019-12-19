@@ -39,6 +39,16 @@ bool contains(const vector<T>& c, const T& t) {
     return false;
 }
 
+template<class T>
+bool contains(const vector<vector<T>>& c, const T& t) {
+    for (const vector<T>& n : c) {
+        for (const T& e : n) {
+            if (e == t) return true;
+        }
+    }
+    return false;
+}
+
 template<class T, class U>
 size_t find_idx(const T& container, const U& elem) {
     return find(container.begin(), container.end(), elem)-container.begin();
