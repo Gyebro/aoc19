@@ -2,10 +2,20 @@
 // Created by Gyebro on 2019-12-18.
 //
 #include <algorithm>
+#include <bitset>
+#include <map>
 #include "day18.h"
 
-const size_t paths_n = 50000;
-const size_t steps_n = 500;
+const size_t paths_n = 400000;
+const size_t steps_n = 2500;
+
+typedef bitset<26> keychain;
+
+typedef pair<size_t, size_t> state_type;
+state_type get_state_hash(const pair<size_t, size_t> &pos, const keychain &keys, const char &target) {
+    size_t p = pos.first + pos.second*100;
+    return {static_cast<size_t>(target) +1000*p, keys.to_ullong() };
+}
 
 enum maze_tile_type {
     wall,
@@ -42,35 +52,40 @@ class graph_tile {
 public:
     size_t x, y;
     vector<graph_tile*> neighbors;
+    bool visited;
     bool wall;
     bool conditional_passage;
-    char conditional_key;
+    char key_name;
+    bool is_key;
     graph_tile() {
         x = y = 0;
+        visited = false;
         wall = false;
+        is_key = false;
         neighbors.resize(0); // Will be generated later
         conditional_passage = false;
-        conditional_key = '\n';
+        key_name = '\n';
     }
     graph_tile(size_t X, size_t Y, bool is_wall) : x(X), y(Y), wall(is_wall) {
+        visited = false;
+        is_key = false;
         neighbors.resize(0); // Will be generated later
         conditional_passage = false;
-        conditional_key = '\n';
+        key_name = '\n';
     }
 };
 
-bool graph_bfs(graph_tile const* target_ptr, const size_t max_steps, vector<graph_tile const *>& front, vector<vector<graph_tile const *>>& paths, const vector<char>& keys) {
+bool graph_bfs(graph_tile *target_ptr, const size_t max_steps, vector<graph_tile *>& front, size_t& steps, const keychain& keys) {
     // For every element in the frontline nodes, enumerate compatible children
     if (front.size() == 0) return false;
-    //cout << "BFS: frontline nodes: " << front.size() << endl;
-    vector<graph_tile const*> new_front;
-    vector<vector<graph_tile const*>> new_paths;
-    graph_tile const* t;
+    vector<graph_tile *> new_front;
+    graph_tile* t;
+    steps++;
     for (size_t i=0; i<front.size(); i++) {
         t = front[i];
-        for (graph_tile const* n : t->neighbors) {
+        for (graph_tile* n : t->neighbors) {
             if (n->conditional_passage) {
-                if (contains(keys, n->conditional_key)) {
+                if (keys.test(n->key_name - 'a')) {
                     // This neighbour is accessible
                 } else {
                     continue; // Skip this neighbour as we don't have the key
@@ -80,37 +95,40 @@ bool graph_bfs(graph_tile const* target_ptr, const size_t max_steps, vector<grap
                 // Target reached
                 // Update paths with this single one
                 new_front.clear();
-                new_paths.clear();
                 front = new_front;
-                new_paths.push_back(paths[i]);
-                new_paths.back().push_back(n);
-                paths = new_paths;
                 return true;
             } else {
-                // Check for max steps and already visited
-                if (paths[i].size()+1 >= max_steps) {
+                if (n->visited)  {
+                    // skip, already visited
+                } else if (steps > max_steps) {
                     // Skip this node, max step constraint
-                } else if (contains(paths, n)) {
-                    // Skip this node as current path already visited n
-                } else if (contains(new_front, n)) {
-                    // Skip this node as it is already enumerated in the current depth
+                } else if (n->is_key && !keys.test(n->key_name - 'a')) {
+                    // If it's an uncollected key, skip front (other branch will target this key)
                 } else {
+                    n->visited = true;
                     new_front.push_back(n);
-                    new_paths.push_back(paths[i]);
-                    new_paths.back().push_back(n);
                 }
             }
         }
     }
     front = new_front;
-    paths = new_paths;
-    return graph_bfs(target_ptr, max_steps, front, paths, keys);
+    return graph_bfs(target_ptr, max_steps, front, steps, keys);
+}
+
+void clear_visited(vector<graph_tile>& graph) {
+    for (graph_tile& t : graph) t.visited = false;
 }
 
 // Return the distance from start to end taking into account the keys_available
-size_t get_distance(const vector<graph_tile>& graph, pair<size_t, size_t> start, pair<size_t, size_t> target, const vector<char>& keys) {
-    graph_tile const *t_start;
-    graph_tile const *t_target;
+size_t get_distance(vector<graph_tile>& graph, pair<size_t, size_t> start, pair<size_t, size_t> target, const char target_key, const keychain& keys,
+                    std::map<state_type, size_t>& storage) {
+    state_type s = get_state_hash(start, keys, target_key);
+    auto search = storage.find(s);
+    if (search != storage.end()) {
+        return search->second;
+    }
+    graph_tile *t_start;
+    graph_tile *t_target;
     for (size_t i=0; i<graph.size(); i++) {
         if (graph[i].x == start.first && graph[i].y == start.second) {
             t_start = &(graph[i]);
@@ -119,39 +137,45 @@ size_t get_distance(const vector<graph_tile>& graph, pair<size_t, size_t> start,
             t_target = &(graph[i]);
         }
     }
-    vector<graph_tile const *> front;
-    vector<vector<graph_tile const *>> paths;
-    paths.push_back(front); // Empty yet
+    vector<graph_tile *> front;
+    //vector<vector<graph_tile *>> paths;
+    //paths.push_back(front); // Empty yet
     front.push_back(t_start);
-    paths.resize(0);
-    if (graph_bfs(t_target, steps_n, front, paths, keys)) {
-        return paths[0].size();
+    //paths.resize(0);
+    clear_visited(graph);
+    size_t steps = 0;
+    if (graph_bfs(t_target, steps_n, front, steps, keys)) {
+        // steps contains the actual number of steps
     } else {
-        return numeric_limits<size_t>::max();
+        steps = numeric_limits<size_t>::max();
     }
+    // Memoization of steps with respect to state
+    storage[s]=steps;
+    return steps;
 }
 
 class hyper_tile {
 public:
     pair<size_t, size_t> coord;
-    vector<char> keys;
+    keychain keys;
     size_t steps;
     hyper_tile() : coord({0,0}), keys(0), steps(0) { }
     hyper_tile(const pair<size_t, size_t>& coord,
-            const vector<char>& keys,
+               const keychain& keys,
             size_t steps) : coord(coord), keys(keys), steps(steps) {}
 };
 
-bool hyper_bfs(vector<hyper_tile>& front, pair<size_t, string>& min_steps,
-               const vector<graph_tile>& graph,
+bool hyper_bfs(vector<hyper_tile>& front, size_t& min_steps,
+               vector<graph_tile>& graph,
                const vector<vector<maze_tile>>& map,
-               const vector<pair<pair<size_t, size_t>, char>>& keys) {
+               const vector<pair<pair<size_t, size_t>, char>>& keys,
+               std::map<state_type, size_t>& storage) {;
     bool debug = true;
     if (front.size() == 0) return false;
     vector<hyper_tile> new_front;
     size_t uncollected = 0;
     size_t steps_treshold = numeric_limits<size_t>::max();
-    if (debug) cout << "Search front: " << front.size() << " keys: " << front[0].keys.size() << "/" << keys.size() << endl;
+    if (debug) cout << "Search front: " << front.size() << " keys: " << front[0].keys.count() << "/" << keys.size() << endl;
     if (front.size() > paths_n) {
         vector<size_t> st;
         for (const hyper_tile& t : front) {
@@ -168,14 +192,14 @@ bool hyper_bfs(vector<hyper_tile>& front, pair<size_t, string>& min_steps,
         // Generate neighbours towards uncollected keys
         uncollected = 0;
         for (const pair<pair<size_t, size_t>, char>& key : keys) {
-            if (!contains(t.keys, key.second)) {
+            if (!t.keys.test(key.second-'a')) {
                 // Key is still uncollected
                 uncollected++;
-                size_t extra_steps = get_distance(graph, t.coord, key.first, t.keys);
+                size_t extra_steps = get_distance(graph, t.coord, key.first, key.second, t.keys, storage);
                 if (extra_steps < numeric_limits<size_t>::max()) {
                     // Key is accessible from t
-                    vector<char> key_list = t.keys;
-                    key_list.push_back(key.second);
+                    keychain key_list = t.keys;
+                    key_list[key.second-'a']=true;
                     new_front.emplace_back(hyper_tile(key.first, key_list, t.steps+extra_steps));
                 }
             } else {
@@ -189,16 +213,13 @@ bool hyper_bfs(vector<hyper_tile>& front, pair<size_t, string>& min_steps,
                 for (const char kk : t.keys) cout << kk;
                 cout << "], steps: " << t.steps << endl;
             }*/
-            if (t.steps < min_steps.first) {
-                min_steps.first = t.steps;
-                string keys_str;
-                for (const char& cc : t.keys) keys_str+=cc;
-                min_steps.second = keys_str;
+            if (t.steps < min_steps) {
+                min_steps = t.steps;
             }
         }
     }
     front = new_front;
-    return hyper_bfs(front, min_steps, graph, map, keys);
+    return hyper_bfs(front, min_steps, graph, map, keys, storage);
 }
 
 void build_graph_from_map(const vector<vector<maze_tile>>& map, vector<graph_tile>& graph) {
@@ -214,20 +235,25 @@ void build_graph_from_map(const vector<vector<maze_tile>>& map, vector<graph_til
             graph_tile tl;
             tl.x = x; tl.y = y;
             tl.conditional_passage = false;
-            tl.conditional_key = '0';
+            tl.key_name = '0';
+            tl.is_key = false;
             switch (t.type) {
                 case wall:
                     tl.wall = true;
                     break;
                 case open:
+                    tl.wall = false;
+                    break;
                 case key:
                     tl.wall = false;
+                    tl.is_key = true;
+                    tl.key_name = t.value;
                     break;
                 case door:
                     char key_needed = t.value + ('a'-'A');
                     tl.wall = false;
                     tl.conditional_passage = true;
-                    tl.conditional_key = key_needed;
+                    tl.key_name = key_needed;
                     break;
             }
             graph.push_back(tl);
@@ -255,16 +281,14 @@ size_t collect_keys(const vector<vector<maze_tile>>& map, const vector<pair<pair
     build_graph_from_map(map, graph);
     hyper_tile t;
     t.coord = start;
-    t.keys.resize(0);
+    t.keys = keychain(0);
     t.steps = 0;
     vector<hyper_tile> front;
     front.push_back(t);
-    pair<size_t,string> min_steps;
-    min_steps.first = numeric_limits<size_t>::max();
-    min_steps.second = "";
-    hyper_bfs(front, min_steps, graph, map, keys);
-    cout << "Shortest path: " << min_steps.second << endl;
-    return min_steps.first;
+    size_t min_steps = numeric_limits<size_t>::max();
+    std::map<state_type, size_t> distance_storage;
+    hyper_bfs(front, min_steps, graph, map, keys, distance_storage);
+    return min_steps;
 }
 
 void day18(bool part_two) {
@@ -304,12 +328,20 @@ void day18(bool part_two) {
             map.push_back(map_line);
             y++;
         }
-        cout << "Found " << keys.size() << " keys\n";
-        cout << "Found " << doors.size() << " doors\n";
-        cout << "Entrance is at: " << entrance.first << "," << entrance.second << endl;
-        // Original plan: Build a graph starting from entrance
-        // For every node: edges towards uncollected and accessible keys are weighted by steps needed
-        size_t steps = collect_keys(map, keys, entrance);
-        cout << "Steps to collect keys: " << steps << endl;
+        if (!part_two) {
+            cout << "Found " << keys.size() << " keys\n";
+            cout << "Found " << doors.size() << " doors\n";
+            cout << "Entrance is at: " << entrance.first << "," << entrance.second << endl;
+            // Original plan: Build a graph starting from entrance
+            // For every node: edges towards uncollected and accessible keys are weighted by steps needed
+            size_t steps = collect_keys(map, keys, entrance);
+            if (steps < numeric_limits<size_t>::max()) {
+                cout << "Steps to collect keys: " << steps << endl;
+            } else {
+                cout << "Failed to collect all keys, modify search heuristics!\n";
+            }
+        }
+
+
     }
 }
