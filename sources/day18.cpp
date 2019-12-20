@@ -222,7 +222,8 @@ bool hyper_bfs(vector<hyper_tile>& front, size_t& min_steps,
     return hyper_bfs(front, min_steps, graph, map, keys, storage);
 }
 
-void build_graph_from_map(const vector<vector<maze_tile>>& map, vector<graph_tile>& graph) {
+void build_graph_from_map(const vector<vector<maze_tile>>& map, vector<graph_tile>& graph,
+                          const vector<pair<pair<size_t, size_t>, char>>& keys) {
     size_t x=0, y=0;
     // Build graph
     size_t W = map[0].size();
@@ -250,10 +251,25 @@ void build_graph_from_map(const vector<vector<maze_tile>>& map, vector<graph_til
                     tl.key_name = t.value;
                     break;
                 case door:
+                    // If this door doesn't have a key, ignore it
                     char key_needed = t.value + ('a'-'A');
-                    tl.wall = false;
-                    tl.conditional_passage = true;
-                    tl.key_name = key_needed;
+                    bool key_available = false;
+                    for (auto key_to_collect : keys) {
+                        if (key_needed == key_to_collect.second) {
+                            key_available = true;
+                        }
+                    }
+                    if (key_available) {
+                        tl.wall = false;
+                        tl.conditional_passage = true;
+                        tl.key_name = key_needed;
+                    } else {
+                        cout << "Ignoring door " << t.value << " because it doesn't have a key here\n";
+                        tl.wall = false;
+                        tl.conditional_passage = false;
+                        tl.key_name = '1';
+                    }
+
                     break;
             }
             graph.push_back(tl);
@@ -278,7 +294,7 @@ void build_graph_from_map(const vector<vector<maze_tile>>& map, vector<graph_til
 size_t collect_keys(const vector<vector<maze_tile>>& map, const vector<pair<pair<size_t, size_t>, char>>& keys, pair<size_t, size_t> start) {
     // Setup graph for key-distance BFS searches
     vector<graph_tile> graph;
-    build_graph_from_map(map, graph);
+    build_graph_from_map(map, graph, keys);
     hyper_tile t;
     t.coord = start;
     t.keys = keychain(0);
@@ -340,8 +356,40 @@ void day18(bool part_two) {
             } else {
                 cout << "Failed to collect all keys, modify search heuristics!\n";
             }
+        } else {
+            map[entrance.second][entrance.first].type = wall;
+            map[entrance.second+1][entrance.first+0].type = wall;
+            map[entrance.second-1][entrance.first+0].type = wall;
+            map[entrance.second+0][entrance.first+1].type = wall;
+            map[entrance.second+0][entrance.first-1].type = wall;
+            pair<size_t, size_t> r1(entrance.first-1, entrance.second-1);
+            pair<size_t, size_t> r2(entrance.first-1, entrance.second+1);
+            pair<size_t, size_t> r3(entrance.first+1, entrance.second+1);
+            pair<size_t, size_t> r4(entrance.first+1, entrance.second-1);
+            vector<pair<pair<size_t, size_t>, char>> keys1;
+            vector<pair<pair<size_t, size_t>, char>> keys2;
+            vector<pair<pair<size_t, size_t>, char>> keys3;
+            vector<pair<pair<size_t, size_t>, char>> keys4;
+            for (const pair<pair<size_t, size_t>, char>& k : keys) {
+                if (k.first.first < entrance.first) { // x < x0
+                    if (k.first.second < entrance.second) { // y < y0
+                        keys1.push_back(k);
+                    } else { // y > y0
+                        keys2.push_back(k);
+                    }
+                } else { // x > x0
+                    if (k.first.second > entrance.second) { // y > y0
+                        keys3.push_back(k);
+                    } else { //  y < y0
+                        keys4.push_back(k);
+                    }
+                }
+            }
+            size_t steps1 = collect_keys(map, keys1, r1);
+            size_t steps2 = collect_keys(map, keys2, r2);
+            size_t steps3 = collect_keys(map, keys3, r3);
+            size_t steps4 = collect_keys(map, keys4, r4);
+            cout << steps1 + steps2 + steps3 + steps4 << endl;
         }
-
-
     }
 }
