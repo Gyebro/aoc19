@@ -170,7 +170,7 @@ bool hyper_bfs(vector<hyper_tile>& front, size_t& min_steps,
                const vector<vector<maze_tile>>& map,
                const vector<pair<pair<size_t, size_t>, char>>& keys,
                std::map<state_type, size_t>& storage) {;
-    bool debug = true;
+    bool debug = false;
     if (front.size() == 0) return false;
     vector<hyper_tile> new_front;
     size_t uncollected = 0;
@@ -264,7 +264,7 @@ void build_graph_from_map(const vector<vector<maze_tile>>& map, vector<graph_til
                         tl.conditional_passage = true;
                         tl.key_name = key_needed;
                     } else {
-                        cout << "Ignoring door " << t.value << " because it doesn't have a key here\n";
+                        //cout << "Ignoring door " << t.value << " because it doesn't have a key here\n";
                         tl.wall = false;
                         tl.conditional_passage = false;
                         tl.key_name = '1';
@@ -345,9 +345,9 @@ void day18(bool part_two) {
             y++;
         }
         if (!part_two) {
-            cout << "Found " << keys.size() << " keys\n";
-            cout << "Found " << doors.size() << " doors\n";
-            cout << "Entrance is at: " << entrance.first << "," << entrance.second << endl;
+            //cout << "Found " << keys.size() << " keys\n";
+            //cout << "Found " << doors.size() << " doors\n";
+            //cout << "Entrance is at: " << entrance.first << "," << entrance.second << endl;
             // Original plan: Build a graph starting from entrance
             // For every node: edges towards uncollected and accessible keys are weighted by steps needed
             size_t steps = collect_keys(map, keys, entrance);
@@ -389,7 +389,7 @@ void day18(bool part_two) {
             size_t steps2 = collect_keys(map, keys2, r2);
             size_t steps3 = collect_keys(map, keys3, r3);
             size_t steps4 = collect_keys(map, keys4, r4);
-            cout << steps1 + steps2 + steps3 + steps4 << endl;
+            cout << "Steps to collect keys with 4 drones: " <<  steps1 + steps2 + steps3 + steps4 << endl;
         }
     }
 }
