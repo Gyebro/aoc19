@@ -102,5 +102,20 @@ int main() {
     day20(true);
 #endif
 
+#ifdef DAY21
+    day21();
+    day21(true);
+#endif
+
+#ifdef DAY22
+    day22();
+    day22(true);
+#endif
+
+#ifdef DAY23
+    day23();
+    day23(true);
+#endif
+
     return 0;
 }

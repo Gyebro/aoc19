@@ -67,5 +67,14 @@
 #ifdef DAY20
 #include "day20.h"
 #endif
+#ifdef DAY21
+#include "day21.h"
+#endif
+#ifdef DAY22
+#include "day22.h"
+#endif
+#ifdef DAY23
+#include "day23.h"
+#endif
 
 #endif //AOC19_DAYS_H
