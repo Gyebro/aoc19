@@ -117,5 +117,14 @@ int main() {
     day23(true);
 #endif
 
+#ifdef DAY24
+    day24();
+    day24(true);
+#endif
+
+#ifdef DAY25
+    day25();
+#endif
+
     return 0;
 }

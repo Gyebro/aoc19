@@ -24,11 +24,16 @@ set(SOURCE_FILES
         sources/day16.cpp
         sources/day17.cpp
         sources/day18.cpp
-        sources/day19.cpp sources/day20.cpp sources/day21.cpp sources/day22.cpp)
+        sources/day19.cpp
+        sources/day20.cpp
+        sources/day21.cpp
+        sources/day22.cpp
+        sources/day23.cpp
+        sources/day24.cpp)
 
 include_directories(sources)
 
-add_executable(aoc19 ${SOURCE_FILES} main.cpp sources/day23.cpp)
+add_executable(aoc19 ${SOURCE_FILES} main.cpp)
 
 add_executable(aoc19-benchmarks ${SOURCE_FILES} benchmarks.cpp)
 
