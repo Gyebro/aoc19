@@ -29,7 +29,7 @@ set(SOURCE_FILES
         sources/day21.cpp
         sources/day22.cpp
         sources/day23.cpp
-        sources/day24.cpp)
+        sources/day24.cpp sources/day25.cpp)
 
 include_directories(sources)
 
