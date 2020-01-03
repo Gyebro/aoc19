@@ -28,14 +28,23 @@ int main() {
             "Space Stoichiometry",
             "Oxygen System",
             "Flawed Frequency Transmission",
-            "Set and Forget"
+            "Set and Forget",
+            "Many-Worlds Interpretation",
+            "Tractor Beam",
+            "Donut Maze",
+            "Springdroid Adventure",
+            "Slam Shuffle",
+            "Category Six",
+            "Planet of Discord",
+            "Cryostasis"
     };
 
     void (*day_functions[])(bool) = {
             &day01, &day02, &day03, &day04, &day05,
             &day06, &day07, &day08, &day09, &day10,
             &day11, &day12, &day13, &day14, &day15,
-            &day16, &day17
+            &day16, &day17, &day18, &day19, &day20,
+            &day21, &day22, &day23, &day24, &day25
     };
 
     Clock c;
@@ -80,9 +89,6 @@ int main() {
     out << setprecision(3) << fixed;
     double time_sum = 0;
     for (size_t i=0; i<tasks.size(); i++) {
-        if (i == 13 || i == 14) {
-            out << tasks[i] << " | " << "-" << " | - \n";
-        } else
         if (i != 25-1) {
             out << tasks[i] << " | " << time_ms[2*i] << " | " << time_ms[2*i+1] << '\n';
             time_sum += time_ms[2*i]+time_ms[2*i+1];
@@ -95,6 +101,8 @@ int main() {
     out << endl;
     out << "Total time: " << time_sum/1000.0 << " seconds\n";
     out << endl;
+    out << "## And so the warp drive has been aligned!\n";
+    out << "![AoC19 calendar](calendar.gif)";
     out.close();
     return 0;
 }
