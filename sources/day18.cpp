@@ -7,7 +7,7 @@
 #include "day18.h"
 
 const size_t paths_n = 400000;
-const size_t steps_n = 2500;
+const size_t steps_n = 1000;
 
 typedef bitset<26> keychain;
 
@@ -15,6 +15,10 @@ typedef pair<size_t, size_t> state_type;
 state_type get_state_hash(const pair<size_t, size_t> &pos, const keychain &keys, const char &target) {
     size_t p = pos.first + pos.second*100;
     return {static_cast<size_t>(target) +1000*p, keys.to_ullong() };
+}
+state_type get_state_hash(const pair<size_t, size_t> &pos, const keychain &keys) {
+    size_t p = pos.first + pos.second*100;
+    return {p, keys.to_ullong()};
 }
 
 enum maze_tile_type {
@@ -138,10 +142,7 @@ size_t get_distance(vector<graph_tile>& graph, pair<size_t, size_t> start, pair<
         }
     }
     vector<graph_tile *> front;
-    //vector<vector<graph_tile *>> paths;
-    //paths.push_back(front); // Empty yet
     front.push_back(t_start);
-    //paths.resize(0);
     clear_visited(graph);
     size_t steps = 0;
     if (graph_bfs(t_target, steps_n, front, steps, keys)) {
@@ -307,6 +308,65 @@ size_t collect_keys(const vector<vector<maze_tile>>& map, const vector<pair<pair
     return min_steps;
 }
 
+size_t steps_to_collect_keys(pair<size_t, size_t> pos, keychain keys_to_collect,
+                             vector<graph_tile>& graph,
+                             const vector<pair<pair<size_t, size_t>, char>>& keys,
+                             std::map<state_type, size_t>& storage,
+                             std::map<state_type, size_t>& bfs_storage) {
+    if (keys_to_collect.count() == 0) {
+        return 0;
+    }
+    state_type s = get_state_hash(pos, keys_to_collect);
+    auto search = storage.find(s);
+    if (search != storage.end()) {
+        return search->second;
+    }
+    size_t result = numeric_limits<size_t>::max();
+    size_t steps_to_keys;
+    // For every reachable key in keys_to_collect
+    for (const pair<pair<size_t, size_t>, char>& key : keys) {
+        if (keys_to_collect.test(key.second-'a')) {
+            // Key is in keys_to_collect
+            // Steps to get key from pos
+            keychain keys_available = keys_to_collect;
+            keys_available.flip();
+            steps_to_keys = get_distance(graph, pos, key.first, key.second, keys_available, bfs_storage);
+            if (steps_to_keys < numeric_limits<size_t>::max()) {
+                // Key is accessible from t, add steps needed to get the rest of 'keys_to_collect'
+                keychain further_keys = keys_to_collect;
+                further_keys[key.second-'a']=false; // Indicate that 'key' has been collected
+                steps_to_keys += steps_to_collect_keys(key.first, further_keys,
+                                                    graph, keys, storage, bfs_storage);
+                result = min(result, steps_to_keys);
+            } else {
+                //cout << "Key '" << key.second << "' is inaccessible from " << pos.first << "," << pos.second << endl;
+                // Key is not accessible, skip this path
+            }
+        } else {
+            // Skip key, already collected
+        }
+    }
+    // Memoise steps to collect keys from pos
+    storage[s] = result;
+    return result;
+}
+
+size_t collect_keys_2(const vector<vector<maze_tile>>& map, const vector<pair<pair<size_t, size_t>, char>>& keys, pair<size_t, size_t> start) {
+    vector<graph_tile> graph;
+    build_graph_from_map(map, graph, keys);
+    std::map<state_type, size_t> bfs_distance_storage;
+    std::map<state_type, size_t> key_distance_storage;
+    keychain keys_to_collect(0);
+    for (const pair<pair<size_t, size_t>, char>& k : keys) {
+        keys_to_collect[k.second-'a']=true;
+    }
+    return steps_to_collect_keys(start, keys_to_collect,
+                                 graph,
+                                 keys,
+                                 key_distance_storage,
+                                 bfs_distance_storage);
+}
+
 void day18(bool part_two) {
     cout << "AoC D18: part " << (part_two ? "two" : "one") << endl;
     ifstream in("input18.txt");
@@ -350,7 +410,8 @@ void day18(bool part_two) {
             //cout << "Entrance is at: " << entrance.first << "," << entrance.second << endl;
             // Original plan: Build a graph starting from entrance
             // For every node: edges towards uncollected and accessible keys are weighted by steps needed
-            size_t steps = collect_keys(map, keys, entrance);
+            //size_t steps = collect_keys(map, keys, entrance);
+            size_t steps = collect_keys_2(map, keys, entrance);
             if (steps < numeric_limits<size_t>::max()) {
                 cout << "Steps to collect keys: " << steps << endl;
             } else {
@@ -385,10 +446,10 @@ void day18(bool part_two) {
                     }
                 }
             }
-            size_t steps1 = collect_keys(map, keys1, r1);
-            size_t steps2 = collect_keys(map, keys2, r2);
-            size_t steps3 = collect_keys(map, keys3, r3);
-            size_t steps4 = collect_keys(map, keys4, r4);
+            size_t steps1 = collect_keys_2(map, keys1, r1);
+            size_t steps2 = collect_keys_2(map, keys2, r2);
+            size_t steps3 = collect_keys_2(map, keys3, r3);
+            size_t steps4 = collect_keys_2(map, keys4, r4);
             cout << "Steps to collect keys with 4 drones: " <<  steps1 + steps2 + steps3 + steps4 << endl;
         }
     }
